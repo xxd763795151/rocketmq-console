@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace为命名空间，应该是mapper接口的全称-->
+<mapper namespace="org.apache.rocketmq.console.dao.ApplyTopicMapper">
+
+    <resultMap id="ApplyTopicDO" type="org.apache.rocketmq.console.model.dao.ApplyTopicDO">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="topic" column="topic"/>
+        <result property="producerGroup" column="producer_group"/>
+        <result property="subItem" column="sub_item"/>
+        <result property="queueNum" column="queue_num"/>
+        <result property="applyRemark" column="apply_remark"/>
+        <result property="accessKey" column="access_key"/>
+        <result property="secretKey" column="secret_key"/>
+        <result property="approveRemark" column="approve_remark"/>
+        <result property="applyStage" column="apply_stage"/>
+        <result property="applyResult" column="apply_result"/>
+        <result property="sendStatus" column="send_status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="ApplyTopicVO" type="org.apache.rocketmq.console.model.vo.ApplyTopicVO">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="topic" column="topic"/>
+        <result property="producerGroup" column="producer_group"/>
+        <result property="subItem" column="sub_item"/>
+        <result property="queueNum" column="queue_num"/>
+        <result property="applyRemark" column="apply_remark"/>
+        <result property="accessKey" column="access_key"/>
+        <result property="secretKey" column="secret_key"/>
+        <result property="approveRemark" column="approve_remark"/>
+        <result property="applyStage" column="apply_stage"/>
+        <result property="applyResult" column="apply_result"/>
+        <result property="sendStatus" column="send_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="itemTeam" column="item_name"/>
+        <result property="itemTeamId" column="item_id"/>
+    </resultMap>
+
+    <select id="selectApplyTopicDOList" parameterType="org.apache.rocketmq.console.model.dao.ApplyTopicDO"
+            resultMap="ApplyTopicDO">
+        select
+        id,
+        username,
+        topic,
+        producer_group,
+        sub_item,
+        queue_num,
+        apply_remark,
+        access_key,
+        secret_key,
+        approve_remark,
+        apply_stage,
+        apply_result,
+        send_status,
+        create_time
+        from apply_topic
+        <where>
+            <if test="username != null and username != ''">
+                username = #{username}
+            </if>
+            <if test="topic != null and topic != ''">
+                and topic = #{topic}
+            </if>
+            <if test="applyStage != null">
+                and apply_stage = #{applyStage}
+            </if>
+            and cluster_env = #{env}
+        </where>
+    </select>
+
+    <insert id="addApplyTopic" parameterType="org.apache.rocketmq.console.model.dao.ApplyTopicDO">
+        insert into apply_topic(username, topic, producer_group, sub_item, queue_num, apply_remark, apply_stage,
+                                apply_result, send_status, cluster_env)
+        VALUES (#{username}, #{topic}, #{producerGroup}, #{subItem}, #{queueNum}, #{applyRemark}, #{applyStage},
+                #{applyResult}, #{sendStatus}, #{env})
+    </insert>
+
+    <select id="selectApplyTopicVOList" resultMap="ApplyTopicVO">
+        select
+        at.id,
+        at.username,
+        at.topic,
+        at.producer_group,
+        at.sub_item,
+        at.queue_num,
+        at.apply_remark,
+        at.access_key,
+        at.secret_key,
+        at.approve_remark,
+        at.apply_stage,
+        at.apply_result,
+        at.send_status,
+        at.create_time,
+        i.item_name,
+        i.id as item_id
+        from apply_topic at
+        join userinfo u on u.username = at.username
+        join item i on i.id = u.item_id
+        <where>
+            <if test="topic.topic != null and topic.topic != ''">
+                and at.topic = #{topic.topic}
+            </if>
+            <if test="topic.applyStage != null">
+                and at.apply_stage = #{topic.applyStage}
+            </if>
+            <if test="topic.username != null and topic.username != ''">
+                and at.username in (select username from userinfo where item_id = #{item.id})
+            </if>
+            and at.cluster_env = #{topic.env}
+        </where>
+        order by at.create_time desc
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long"
+            resultMap="ApplyTopicDO">
+        select id,
+               username,
+               topic,
+               producer_group,
+               sub_item,
+               queue_num,
+               apply_remark,
+               access_key,
+               secret_key,
+               approve_remark,
+               apply_stage,
+               apply_result,
+               send_status,
+               create_time
+        from apply_topic
+        where id = #{id}
+    </select>
+
+    <update id="updateApproveTopic" parameterType="org.apache.rocketmq.console.model.dao.ApplyTopicDO">
+        update apply_topic
+        <set>
+            <if test="producerGroup != null and producerGroup != ''">
+                producer_group = #{producerGroup},
+            </if>
+            <if test="subItem != null and subItem != ''">
+                sub_item = #{subItem},
+            </if>
+            approve_remark = #{approveRemark},
+            apply_stage = #{applyStage},
+            apply_result = #{applyResult},
+            access_key = #{accessKey},
+            secret_key = #{secretKey}
+        </set>
+        where id =#{id}
+    </update>
+
+    <update id="updateApplyReject" parameterType="org.apache.rocketmq.console.model.dao.ApplyTopicDO">
+        update apply_topic
+        set apply_result = #{applyResult},
+            apply_stage  = #{applyStage},
+            approve_remark = #{approveRemark}
+        where id = #{id}
+    </update>
+
+    <update id="updateSendStatus" parameterType="org.apache.rocketmq.console.model.dao.ApplyTopicDO">
+        update apply_topic
+        set send_status = #{sendStatus}
+        where id = #{id}
+    </update>
+</mapper>

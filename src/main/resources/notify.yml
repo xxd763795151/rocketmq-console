@@ -1,0 +1,10 @@
+notify:
+  -
+   type: email
+   info: 1
+   topics:
+     - test_topic
+   consumers:
+     - test_topic@test_topic_consumer
+   concat:
+     - email@qq.com

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apply Subscription Group</title>
+
+    <style>
+        /** Table 表格样式 **/
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            border: 1px solid #c6c6c6 !important;
+            margin-bottom: 20px;
+        }
+
+        table thead tr td {
+            background-color: lightblue;
+        }
+
+        table th {
+            border-collapse: collapse;
+            border-right: 1px solid #c6c6c6 !important;
+            border-bottom: 1px solid #c6c6c6 !important;
+            background-color: #ddeeff !important;
+            padding: 5px 9px;
+            font-size: 14px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        table td {
+            border-collapse: collapse;
+            border-right: 1px solid #c6c6c6 !important;
+            border-bottom: 1px solid #c6c6c6 !important;
+            padding: 5px 9px;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        table tr:nth-child(odd) {
+            background-color: #fff !important;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f8f8 !important;
+        }
+    </style>
+</head>
+<body>
+<h1>RocketMQ 消费组申请流程结束</h1>
+<hr>
+<div style="padding: 2% 5% 1% 2%">
+    <div th:if="${pass}">
+        <h2><span th:text="${env}"></span>集群审批通过，已创建完成</h2>
+        <div>
+            <table>
+                <thead>
+                <tr>
+                    <td>消费组</td>
+                    <td>Access Key</td>
+                    <td>Secret Key</td>
+                    <td>审批备注</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:text="${subscriptionGroup}"></td>
+                    <td th:text="${accessKey}">accesskey</td>
+                    <td th:text="${secretKey}">secretkey</td>
+                    <td th:text="${remark}">description</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:unless="${pass}">
+        <h2 style="color: red"><span th:text="${env}"></span>集群审批拒绝</h2>
+        <div>
+            <label>消费组：</label><span th:text="${subscriptionGroup}">subscriptionGroup</span>
+            <p></p>
+            <label>审批备注：</label><span th:text="${remark}">reject</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

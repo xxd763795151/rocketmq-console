@@ -1,0 +1,69 @@
+#!/bin/bash
+#version      1.0
+#description  rocketmq-console boot control script
+
+# set up the deployment environment：dev、test、test3、pre、prod
+deploy_environment=test
+
+function usage() {
+  echo 'Usage: rocketmq-console -help | -options'
+  echo 'rocketmq-console <-start> [args..] | <-stop> | <-run> | [-help]'
+  echo "-start, start rocketmq-console"
+  echo '   The parameters [args] ars as follows:'
+  echo -e '\t --server.port, listen port, default 8080, e.g. --server.port=9098'
+  echo -e '\t ...etc. other properties see spring boot application.properties'
+  echo '-run, run rocketmq-console in the foreground'
+  echo '-stop, stop rocketmq-console'
+  echo '-help, print help info'
+}
+
+start=1
+if [ -z $1 ];then
+  usage
+fi
+
+JAVA_OPTS=" -DXmx2g -Xms2g -Xmn1g $JAVA_OPTS "
+JAVA_OPTS=" -Dfile.encoding=UTF-8 $JAVA_OPTS "
+
+ARGS="--env=$deploy_environment $ARGS"
+
+case $1 in
+  -start)
+    echo 'Start rocketmq-console...'
+    start=1
+    ;;
+  -stop)
+    echo 'Stop rocketmq-console...'
+    start=0
+    ;;
+    -run)
+    echo 'Start rocketmq-console...'
+    start=2
+    ;;
+  *)
+    usage
+    exit
+    ;;
+esac
+shift
+
+until [ $# -eq 0 ]; do
+    ARGS=" $ARGS $1"
+    shift
+done
+
+PSIGNAL='rocketmq-console,a_visual_manage_platform_of_rocketmq'
+
+JAVA=`which java`
+[ ! -x $JAVA ] && echo 'No jre.' && exit
+
+TARGET=`find . -iname '*.jar'`
+
+if [ $start -eq 1 ];then
+  nohup $JAVA -jar $JAVA_OPTS $TARGET $ARGS $PSIGNAL 1>/dev/null 2>error.log &
+elif [ $start -eq 2 ];then
+   $JAVA -jar $JAVA_OPTS $TARGET $ARGS $PSIGNAL
+else
+  pkill -f $PSIGNAL
+fi
+

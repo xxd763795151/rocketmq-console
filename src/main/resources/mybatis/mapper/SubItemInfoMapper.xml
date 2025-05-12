@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace为命名空间，应该是mapper接口的全称-->
+<mapper namespace="org.apache.rocketmq.console.dao.SubItemInfoMapper">
+
+    <resultMap id="SubItemInfoDO" type="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        <id property="id" column="id"/>
+        <result property="subItemCode" column="sub_item_code"/>
+        <result property="subItemName" column="sub_item_name"/>
+        <result property="description" column="sub_item_description"/>
+        <result property="itemId" column="item_id"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <resultMap id="SubItemInfoVO" type="org.apache.rocketmq.console.model.vo.SubItemInfoVO">
+        <id property="id" column="id"/>
+        <result property="subItemCode" column="sub_item_code"/>
+        <result property="subItemName" column="sub_item_name"/>
+        <result property="description" column="sub_item_description"/>
+        <result property="itemId" column="item_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="itemCode" column="item_code"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <select id="selectSubItemInfoVOList" resultMap="SubItemInfoVO"
+            parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        select
+        sub.id,
+        sub.sub_item_code,
+        sub.sub_item_name,
+        sub.sub_item_description,
+        sub.item_id,
+        sub.username,
+        i.item_name
+        from sub_item_info sub
+        join item i on i.id = sub.item_id
+        <where>
+            <if test="itemId != null">
+                sub.item_id = #{itemId}
+            </if>
+            <if test="subItemName != null and subItemName !=''">
+                and sub.sub_item_name = #{subItemName}
+            </if>
+            <if test="subItemCode != null and subItemCode !=''">
+                and sub.sub_item_code = #{subItemCode}
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        insert into sub_item_info(sub_item_code, sub_item_name, sub_item_description, item_id, username)
+        VALUES (#{subItemCode}, #{subItemName}, #{description}, #{itemId}, #{username})
+    </insert>
+
+    <update id="update" parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        update sub_item_info
+        <set>
+            sub_item_name = #{subItemName},
+            sub_item_description = #{description}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        delete
+        from sub_item_info
+        where id = #{id}
+    </delete>
+
+    <select id="selectSubItemInfoDOList" resultMap="SubItemInfoDO"
+            parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        select
+        sub.id,
+        sub.sub_item_code,
+        sub.sub_item_name,
+        sub.sub_item_description,
+        sub.item_id,
+        sub.username
+        from sub_item_info sub
+        <where>
+            <if test="itemId != null">
+                sub.item_id = #{itemId}
+            </if>
+            <if test="subItemName != null and subItemName !=''">
+                and sub.sub_item_name = #{subItemName}
+            </if>
+            <if test="subItemCode != null and subItemCode !=''">
+                and sub.sub_item_code = #{subItemCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectGroupByItem" resultMap="SubItemInfoDO"
+            parameterType="org.apache.rocketmq.console.model.dao.SubItemInfoDO">
+        select
+        sub.id,
+        sub.sub_item_code,
+        sub.sub_item_name,
+        sub.sub_item_description,
+        sub.item_id,
+        sub.username
+        from sub_item_info sub
+        <where>
+            sub.item_id = #{itemId}
+        </where>
+    </select>
+</mapper>

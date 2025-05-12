@@ -1,0 +1,98 @@
+<div class="container-fluid" id="accountOperationRecordList" role="main">
+    <div class="modal-body">
+        <div class="row">
+            <form class="form-inline pull-left col-sm-12">
+                <div class="form-group form-group-sm">
+                    <label>{{'USERNAME' | translate}}:</label>
+                    <input type="text" class="form-control" ng-model="username">
+                </div>
+                <button class="btn btn-raised btn-sm btn-primary" type="button" ng-click="initList()">
+                    {{'REFRESH' | translate}}
+                </button>
+            </form>
+        </div>
+        <br>
+        <div>
+            <div class="row">
+                <table class="table table-bordered text-middle">
+                    <tr>
+                        <th class="text-center">{{'USERNAME' | translate}}</th>
+                        <th class="text-center">{{'EMAIL' | translate}}</th>
+                        <th class="text-center">{{'PROJECT_TEAM' | translate}}</th>
+                        <th class="text-center">{{'ROLE' | translate}}</th>
+                        <th class="text-center">{{'OPERATION_TYPE' | translate}}</th>
+                        <th class="text-center">{{'CREATE_TIME' | translate}}</th>
+                        <th class="text-center">{{'SEND_STATUS' | translate}}</th>
+                        <th class="text-center">{{ 'OPERATION' | translate}}</th>
+                    </tr>
+                    <tr ng-repeat="record in recordDataList">
+                        <td class="text-left"><font color={{sysFlag?"red":""}}>{{record.username}}</font></td>
+                        <td class="text-left"><font color={{sysFlag?"red":""}}>{{record.email}}</font></td>
+                        <td class="text-left"><font color={{sysFlag?"red":""}}>{{record.itemName}}</font></td>
+                        <td class="text-left"><font color={{sysFlag?"red":""}}>{{record.roleName}}</font></td>
+                        <td class="text-left"><font
+                                color={{sysFlag?"red":""}}>{{record.operationType == 0 ? '注册新用户' : '忘记密码'}}</font></td>
+                        <td class="text-left"><font color={{sysFlag?"red":""}}>{{record.createTime}}</font></td>
+                        <td class="text-left"><font
+                                color={{record.sendStatus!=1?"red":""}}>{{record.sendStatus == 1 ? '发送成功' : '发送失败'}}</font>
+                        </td>
+                        <td class="text-left">
+                            <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                    ng-click="openResendDialog(record)">{{'RESEND' | translate}}
+                            </button>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <tm-pagination conf="paginationConf"></tm-pagination>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="resendDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'RESEND' | translate }}</h4>
+    </div>
+    <div class="modal-body">
+        <form id="resendRecordForm" name="resendRecordForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'USERNAME' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.username" type="text"
+                           ng-disabled="true" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PASSWORD' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.password" type="text"
+                           ng-disabled="true" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'EMAIL' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.email" type="text"
+                           ng-disabled="true" required/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="resendRequest(ngDialogData)">{{ 'RESEND' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+
+
+

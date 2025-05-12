@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Account</title>
+</head>
+<body>
+<h1>RocketMQ控制台登录账户注册成功</h1>
+<hr>
+<div style="padding: 2% 10% 10% 10%">
+    <p><label>用户名：</label><span th:text="${username}"></span></p>
+    <p><label>密码：</label><span th:text="${password}"></span></p>
+    <p><span>该账号用于登录</span><span th:text="${environment}"></span>环境</p>
+</div>
+<div>
+    <h3>各环境控制台地址如下：</h3>
+    <ul>
+        <li>开发：http://localhost.com/</li>
+    </ul>
+</div>
+</body>
+</html>

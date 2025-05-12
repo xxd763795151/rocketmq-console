@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace为命名空间，应该是mapper接口的全称-->
+<mapper namespace="org.apache.rocketmq.console.dao.UserMapper">
+
+    <insert id="addUser" parameterType="org.apache.rocketmq.console.model.request.UpdateUserRequest"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into userinfo(username, password, role_id, item_id, notify, email)
+        values (#{name}, #{password}, #{role}, #{item}, #{notify}, #{email})
+    </insert>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace为命名空间，应该是mapper接口的全称-->
+<mapper namespace="org.apache.rocketmq.console.dao.AccountOperationRecordMapper">
+
+    <resultMap id="AccountOperationRecord" type="org.apache.rocketmq.console.model.AccountOperationRecord">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="itemId" column="item_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="sendStatus" column="send_status"/>
+        <result property="sendMessage" column="send_message"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="add" parameterType="org.apache.rocketmq.console.model.AccountOperationRecord">
+        insert into account_operation_record
+        (username, password, email, item_id, item_name, role_id, role_name, operation_type, send_status, send_message)
+        VALUES (#{username}, #{password}, #{email}, #{itemId}, #{itemName}, #{roleId}, #{roleName}, #{operationType},
+                #{sendStatus}, #{sendMessage})
+    </insert>
+
+    <select id="select" resultMap="AccountOperationRecord"
+            parameterType="org.apache.rocketmq.console.model.AccountOperationRecord">
+        select id, username, password, email, item_id, item_name, role_id, role_name, operation_type, send_status,
+        send_message, create_time
+        from account_operation_record
+        <where>
+            <if test="username != null and username !=''">
+                username = #{username}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <update id="update" parameterType="org.apache.rocketmq.console.model.AccountOperationRecord">
+        update account_operation_record
+        <set>
+            send_status = #{sendStatus}
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

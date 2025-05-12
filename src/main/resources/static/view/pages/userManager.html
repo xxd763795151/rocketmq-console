@@ -1,0 +1,396 @@
+<div class="container-fluid" id="deployHistoryList">
+    <div class="modal-body">
+        <div ng-cloak="" class="tabsdemoDynamicHeight">
+            <md-content>
+                <md-tabs md-dynamic-height="" md-border-bottom="">
+                    <md-tab label="User Info">
+                        <md-content class="md-padding" style="min-height:600px">
+                            <form class="form-inline pull-left col-sm-12">
+                                <div class="form-group">
+                                    <label>{{'USERNAME' | translate}}:</label>
+                                    <input class="form-control" style="width: 450px" type="text" ng-model="filterStr"/>
+                                </div>
+
+                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                        ng-click="openAddDialog()">{{'ADD' |
+                                translate}}
+                                </button>
+                            </form>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th class="text-center">{{'USERNAME' | translate}}</th>
+                                    <th class="text-center">{{'PASSWORD' | translate}}</th>
+                                    <th class="text-center">{{'ROLE' | translate}}</th>
+                                    <th class="text-center">{{'ITEM' | translate}}</th>
+                                    <th class="text-center">{{'NOTIFY' | translate}}</th>
+                                    <th class="text-center">{{'EMAIL' | translate}}</th>
+                                    <th class="text-center">{{'OPERATION' | translate}}</th>
+                                </tr>
+                                <tr ng-repeat="item in userList">
+                                    <td class="text-center">{{item.name}}</td>
+                                    <td class="text-center">{{item.password}}</td>
+                                    <td class="text-center">{{item.role.name}}</td>
+                                    <td class="text-center">{{item.item.name}}</td>
+                                    <td class="text-center"><span ng-if="item.notify==0">关闭</span><span ng-if="item.notify!=0">开启</span></td>
+                                    <td class="text-center">{{item.email}}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                ng-click="openUpdateUserDialog(item)">
+                                            {{'UPDATE' | translate}}
+                                        </button>
+                                        <button ng-disabled="item.name == 'admin'" class="btn btn-raised btn-sm btn-danger" type="button"
+                                                ng-confirm-click="Are you sure to delete?"
+                                                confirmed-click="deleteUser(item.id)">{{'DELETE' | translate}}
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <tm-pagination conf="paginationConf"></tm-pagination>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Role Info">
+                        <md-content class="md-padding" style="min-height:600px">
+                            <form class="form-inline pull-left col-sm-12">
+                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                        ng-click="openAddRoleDialog()">{{'ADD' |
+                                translate}}
+                                </button>
+                            </form>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th class="text-center">{{'ROLE' | translate}}</th>
+                                    <th class="text-center">{{'ROLE_TYPE' | translate}}</th>
+                                    <th class="text-center">{{'OPERATION' | translate}}</th>
+                                </tr>
+                                <tr ng-repeat="item in allRoleList">
+                                    <td class="text-center">{{item.name}}
+                                    <td class="text-center">{{item.type}}
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                ng-click="openUpdateRoleDialog(item)">
+                                            {{'UPDATE' | translate}}
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Item Info">
+                        <md-content class="md-padding" style="min-height:600px">
+                            <form class="form-inline pull-left col-sm-12">
+                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                        ng-click="openAddItemDialog()">{{'ADD' |
+                                translate}}
+                                </button>
+                            </form>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th class="text-center">{{'ITEM' | translate}}</th>
+                                    <th class="text-center">{{'ITEM_CODE' | translate}}</th>
+                                    <th class="text-center">{{'OPERATION' | translate}}</th>
+                                </tr>
+                                <tr ng-repeat="item in allItemList">
+                                    <td class="text-center">{{item.name}}</td>
+                                    <td class="text-center">{{item.code}}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                ng-click="openUpdateItemDialog(item)">
+                                            {{'UPDATE' | translate}}
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="addUserDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'ADD' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="addAppForm" name="addAppForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'USERNAME' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="name" type="text"
+                           required/>
+                    <span class="text-danger" ng-show="addAppForm.name.$error.required">用户名不能为空.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PASSWORD' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.password" type="text"
+                           required/>
+                    <span class="text-danger" ng-show="addAppForm.name.$error.required">密码不能为空.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectRoleList" chosen
+                            ng-model="role"
+                            ng-options="role.name for role in ngDialogData.roleList">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" chosen
+                            ng-model="item"
+                            ng-options="item.name for item in ngDialogData.itemList">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'NOTIFY' | translate}}:</label>
+                <div class="col-sm-8">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink"
+                               ng-model="notify">
+                    </md-switch>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'EMAIL' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="email" type="text"/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="postUserRequest({'item':item.id, 'role': role.id, 'name': name, 'password': ngDialogData.password, 'notify': notify ? 1 : 0, 'email': email})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="updateUserDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'UPDATE' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="updateAppForm" name="updateAppForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'USERNAME' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.user.name" type="text" ng-value="ngDialogData.user.name"
+                           readonly style="cursor: not-allowed"/>
+                    <span class="text-danger" ng-show="addAppForm.name.$error.required">用户名不能为空.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PASSWORD' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.user.password" type="text" ng-value="ngDialogData.user.password"
+                           required/>
+                    <span class="text-danger" ng-show="addAppForm.name.$error.required">密码不能为空.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectRoleList" chosen ng-disabled="ngDialogData.user.name == 'admin'"
+                            ng-model="ngDialogData.user.role.id"
+                            ng-options="role.id as role.name for role in ngDialogData.roleList">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" chosen
+                            ng-model="ngDialogData.user.item.id"
+                            ng-options="item.id as item.name for item in ngDialogData.itemList">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'NOTIFY' | translate}}:</label>
+                <div class="col-sm-8">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink"
+                               ng-model="ngDialogData.user.notify">
+                    </md-switch>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'EMAIL' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.user.email" type="text"/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="updateUserRequest({'id': ngDialogData.user.id, 'item':ngDialogData.user.item.id, 'role': ngDialogData.user.role.id,
+                        'name': ngDialogData.user.name, 'password': ngDialogData.user.password, 'notify': ngDialogData.user.notify ? 1 : 0, 'email': ngDialogData.user.email})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+
+<script type="text/ng-template" id="addRoleDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'ADD' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="addRoleForm" name="addRoleForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="name" type="text"
+                           required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE_TYPE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="type" type="text"
+                           required/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="addRoleRequest({'name':name, 'type': type})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="updateRoleDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'UPDATE' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="updateRoleForm" name="updateRoleForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.role.name" type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ROLE_TYPE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.role.type" type="text"
+                           required/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="updateRoleRequest({'id': ngDialogData.role.id, 'name':ngDialogData.role.name, 'type': ngDialogData.role.type})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="addItemDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'ADD' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="addItemForm" name="addItemForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="name" type="text"
+                           required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM_CODE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="code" type="text"
+                           required/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="addItemRequest({'name':name, 'code': code})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="updateItemDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'UPDATE' | translate }}</h4>
+    </div>
+    <div class="modal-body ">
+        <form id="updateItemForm" name="updateItemForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.item.name" type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM_CODE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.item.code" type="text"
+                           required/>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary"
+                        ng-click="updateItemRequest({'id': ngDialogData.item.id, 'name':ngDialogData.item.name, 'code': ngDialogData.item.code})">
+                    {{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>

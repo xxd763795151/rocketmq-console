@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approve Notify</title>
+
+    <style>
+        /** Table 表格样式 **/
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            border: 1px solid #c6c6c6 !important;
+            margin-bottom: 20px;
+        }
+
+        table thead tr td {
+            background-color: lightblue;
+        }
+
+        table th {
+            border-collapse: collapse;
+            border-right: 1px solid #c6c6c6 !important;
+            border-bottom: 1px solid #c6c6c6 !important;
+            background-color: #ddeeff !important;
+            padding: 5px 9px;
+            font-size: 14px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        table td {
+            border-collapse: collapse;
+            border-right: 1px solid #c6c6c6 !important;
+            border-bottom: 1px solid #c6c6c6 !important;
+            padding: 5px 9px;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        table tr:nth-child(odd) {
+            background-color: #fff !important;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f8f8 !important;
+        }
+    </style>
+</head>
+<body>
+<h1>RocketMQ控制台审批通知，您有待审批的申请请及时处理</h1>
+<h2>环境：<span th:text="${env}"></span></h2>
+<h2>资源类型：<span th:text="${type}">unknown</span></h2>
+<!--<hr>-->
+
+<div>
+    <fieldset>
+        <legend>申请信息</legend>
+        <div th:if="${isTopic}">
+            <table>
+                <thead>
+                <tr>
+                    <td>topic</td>
+                    <td>队列数</td>
+                    <td>生产组</td>
+                    <td>申请用户名</td>
+                    <td>用户邮箱</td>
+                    <td>项目</td>
+                    <td>项目组</td>
+                    <td>申请备注</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="t:${list}">
+                    <td th:text="${t.topic}"></td>
+                    <td th:text="${t.queueNum}">queueNum</td>
+                    <td th:text="${t.producerGroup}">producerGroup</td>
+                    <td th:text="${t.username}">username</td>
+                    <td th:text="${t.email}">email</td>
+                    <td th:text="${t.subItem}"></td>
+                    <td th:text="${t.itemName}"></td>
+                    <td th:text="${t.applyRemark}">remark</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${isTopic}">
+            <table>
+                <thead>
+                <tr>
+                    <td>消费组</td>
+                    <td>订阅topic</td>
+                    <td>启用广播消费</td>
+                    <td>申请用户名</td>
+                    <td>用户邮箱</td>
+                    <td>项目</td>
+                    <td>项目组</td>
+                    <td>申请备注</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c:${list}">
+                    <td th:text="${c.subscriptionGroup}"></td>
+                    <td th:text="${c.topic}"></td>
+                    <td th:text="${c.consumeBroadcastEnable}">consumeBroadcastEnable</td>
+                    <td th:text="${c.username}">username</td>
+                    <td th:text="${c.email}">email</td>
+                    <td th:text="${c.subItem}"></td>
+                    <td th:text="${c.itemName}"></td>
+                    <td th:text="${c.applyRemark}">remark</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div>
+            <h3>各环境控制台地址如下：</h3>
+            <ul>
+                <li>开发：http://localhost.com/</li>
+            </ul>
+        </div>
+    </fieldset>
+
+
+</div>
+
+</body>
+</html>

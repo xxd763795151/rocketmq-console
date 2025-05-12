@@ -1,0 +1,491 @@
+<div class="container-fluid" id="resourcesApplicationList" role="main">
+    <div class="modal-body">
+        <div class="row">
+            <form class="form-inline pull-left col-sm-12">
+                <div class="form-group form-group-sm">
+                    <label>{{'USERNAME' | translate}}:</label>
+                    <input type="text" class="form-control" ng-model="username">
+                </div>
+                <button class="btn btn-raised btn-sm btn-primary" type="button" ng-click="initList()">
+                    {{'REFRESH' | translate}}
+                </button>
+                <button class="btn btn-raised btn-sm btn-primary" type="button" ng-click="applyTopic()"  ng-show="{{!show}}">
+                    {{'APPLY' | translate}} Topic
+                </button>
+                <button class="btn btn-raised btn-sm btn-primary" type="button" ng-click="applySubscriptionGroup()"  ng-show="{{!show}}">
+                    {{'APPLY' | translate}} Consumer Group
+                </button>
+            </form>
+        </div>
+        <br>
+
+        <div ng-cloak="" class="tabsdemoDynamicHeight">
+            <md-content>
+                <md-tabs md-dynamic-height="" md-border-bottom="">
+                    <md-tab label="topic">
+                        <md-content class="md-padding" style="min-height:600px">
+                            <form class="form-inline pull-left col-sm-12">
+                                <div class="form-group form-group-sm">
+                                    <label>{{'TOPIC' | translate}}:</label>
+                                    <input type="text" class="form-control" ng-model="topicFilter">
+                                </div>
+                            </form>
+                            <h5 class="md-display-5">topic申请记录</h5>
+
+                            <div>
+                                <div class="row">
+                                    <table class="table table-bordered text-middle">
+                                        <tr>
+                                            <th class="text-center">{{'TOPIC' | translate}}</th>
+                                            <th class="text-center">{{'PRODUCER_GROUP' | translate}}</th>
+                                            <th class="text-center">
+                                                {{'READ_QUEUE_NUMS' | translate}}/{{'WRITE_QUEUE_NUMS' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'ITEM' | translate}}</th>
+                                            <th class="text-center">{{'PROJECT_TEAM' | translate}}</th>
+                                            <th class="text-center">Access Key</th>
+                                            <th class="text-center">Secret Key</th>
+                                            <th class="text-center">{{'APPLY' | translate}} {{'USERNAME' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'APPLY' | translate}} {{'REMARK' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'APPROVE' | translate}} {{'REMARK' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'PROCESS_STAGE' | translate}}</th>
+                                            <th class="text-center">{{'APPLY_RESULT' | translate}}</th>
+                                            <th class="text-center">{{'CREATE_TIME' | translate}}</th>
+                                            <th class="text-center" ng-show="{{show}}">{{'SEND_STATUS' | translate}}</th>
+                                            <th class="text-center" ng-show="{{show}}">{{ 'OPERATION' | translate}}</th>
+                                        </tr>
+                                        <tr ng-repeat="record in applyTopicDataList">
+                                            <td class="text-left">{{record.topic}}</td>
+                                            <td class="text-left">{{record.producerGroup}}</td>
+                                            <td class="text-left">{{record.queueNum}}</td>
+                                            <td class="text-left">{{record.subItem}}</td>
+                                            <td class="text-left">{{record.itemTeam}}</td>
+                                            <td class="text-left">{{record.accessKey}}</td>
+                                            <td class="text-left">{{record.secretKey}}</td>
+                                            <td class="text-left">{{record.username}}</td>
+                                            <td class="text-left">{{record.applyRemark}}</td>
+                                            <td class="text-left">{{record.approveRemark}}</td>
+                                            <td class="text-left"><font
+                                                    color={{record.applyStage!=1?"red":""}}>{{record.applyStage == 1 ? '已完成' : '待审批'}}</font>
+                                            </td>
+                                            <td class="text-left">
+                                                <span ng-if="record.applyResult==1">通过</span>
+                                                <span ng-if="record.applyResult==0" style="color: red">拒绝</span>
+                                                <span ng-if="record.applyResult==2">未知</span>
+                                            </td>
+                                            <td class="text-left">{{record.createTime}}</td>
+                                            <td class="text-left" ng-show="{{show}}">
+                                                <span ng-if="record.sendStatus==1">通知成功</span>
+                                                <span ng-if="record.sendStatus==0" style="color: red">通知失败</span>
+                                                <span ng-if="record.sendStatus==2">未知</span>
+                                            </td>
+                                            <td class="text-left" ng-show="{{show}}">
+                                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                        ng-disabled="record.applyStage == 1"
+                                                        ng-click="openApproveTopicDialog(record)">
+                                                    {{'APPROVE' | translate}}
+                                                </button>
+                                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                        ng-disabled="record.applyStage != 1"
+                                                        ng-confirm-click="Are you sure to resend?"
+                                                        id="approveTopicResendBtn"
+                                                        confirmed-click="resendApproveTopicRequest(record)">
+                                                    {{'RESEND' | translate}}
+                                                </button>
+                                                <button class="btn btn-raised btn-sm btn-danger" type="button"
+                                                        ng-disabled="record.applyStage != 1"
+                                                        ng-confirm-click="Are you sure to revocation?"
+                                                        id="revocationTopicBtn"
+                                                        confirmed-click="revocationRequest(record, 'topic', '#revocationTopicBtn')">
+                                                    {{'REVOCATION' | translate}}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <tm-pagination conf="paginationConf"></tm-pagination>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Consumer Group">
+
+                        <md-content class="md-padding" style="min-height:600px">
+                            <h5 class="md-display-5">消费组申请记录</h5>
+                            <form class="form-inline pull-left col-sm-12">
+                                <div class="form-group form-group-sm">
+                                    <label>{{'SUBSCRIPTION_GROUP' | translate}}:</label>
+                                    <input type="text" class="form-control" ng-model="subscriptionGroupFilter">
+                                </div>
+                            </form>
+                            <div>
+                                <div class="row">
+                                    <table class="table table-bordered text-middle">
+                                        <tr>
+                                            <th class="text-center">{{'SUBSCRIPTION_GROUP' | translate}}</th>
+                                            <th class="text-center">{{'SUBSCRIPTION' | translate}}
+                                                {{'TOPIC' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'CONSUME_BROADCAST_ENABLE' | translate}}</th>
+                                            <th class="text-center">{{'ITEM' | translate}}</th>
+                                            <th class="text-center">{{'PROJECT_TEAM' | translate}}</th>
+                                            <th class="text-center">Access Key</th>
+                                            <th class="text-center">Secret Key</th>
+                                            <th class="text-center">{{'APPLY' | translate}} {{'USERNAME' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'APPLY' | translate}} {{'REMARK' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'APPROVE' | translate}} {{'REMARK' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'PROCESS_STAGE' | translate}}</th>
+                                            <th class="text-center">{{'APPLY_RESULT' | translate}}</th>
+                                            <th class="text-center">{{'CREATE_TIME' | translate}}</th>
+                                            <th class="text-center" ng-show="{{show}}">{{'SEND_STATUS' | translate}}</th>
+                                            <th class="text-center" ng-show="{{show}}">{{ 'OPERATION' | translate}}</th>
+                                        </tr>
+                                        <tr ng-repeat="record in applySubscriptionGroupDataList">
+                                            <td class="text-left">{{record.subscriptionGroup}}</td>
+                                            <td class="text-left">{{record.topic}}</td>
+                                            <td class="text-left">{{record.consumeBroadcastEnable}}</td>
+                                            <td class="text-left">{{record.subItem}}</td>
+                                            <td class="text-left">{{record.itemTeam}}</td>
+                                            <td class="text-left">{{record.accessKey}}</td>
+                                            <td class="text-left">{{record.secretKey}}</td>
+                                            <td class="text-left">{{record.username}}</td>
+                                            <td class="text-left">{{record.applyRemark}}</td>
+                                            <td class="text-left">{{record.approveRemark}}</td>
+                                            <td class="text-left"><font
+                                                    color={{record.applyStage!=1?"red":""}}>{{record.applyStage == 1 ? '已完成' : '待审批'}}</font>
+                                            </td>
+                                            <td class="text-left">
+                                                <span ng-if="record.applyResult==1">通过</span>
+                                                <span ng-if="record.applyResult==0" style="color: red">拒绝</span>
+                                                <span ng-if="record.applyResult==2">未知</span>
+                                            </td>
+                                            <td class="text-left">{{record.createTime}}</td>
+                                            <td class="text-left" ng-show="{{show}}">
+                                                <span ng-if="record.sendStatus==1">通知成功</span>
+                                                <span ng-if="record.sendStatus==0" style="color: red">通知失败</span>
+                                                <span ng-if="record.sendStatus==2">未知</span>
+                                            </td>
+                                            <td class="text-left" ng-show="{{show}}">
+                                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                        ng-disabled="record.applyStage == 1"
+                                                        ng-click="openApproveSubscriptionGroupDialog(record)">
+                                                    {{'APPROVE' | translate}}
+                                                </button>
+                                                <button class="btn btn-raised btn-sm btn-primary" type="button"
+                                                        ng-disabled="record.applyStage != 1"
+                                                        ng-confirm-click="Are you sure to resend?"
+                                                        id="approveSubscriptionResendBtn"
+                                                        confirmed-click="resendApproveSubscriptionRequest(record)">
+                                                    {{'RESEND' | translate}}
+                                                </button>
+                                                <button class="btn btn-raised btn-sm btn-danger" type="button"
+                                                        ng-disabled="record.applyStage != 1"
+                                                        ng-confirm-click="Are you sure to revocation?"
+                                                        id="revocationConsumerBtn"
+                                                        confirmed-click="revocationRequest(record, 'consumer', '#revocationConsumerBtn')">
+                                                    {{'REVOCATION' | translate}}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <tm-pagination conf="subscriptionPaginationConf"></tm-pagination>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="applyTopicDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'APPLY' | translate}} Topic</h4>
+    </div>
+    <div class="modal-body">
+        <form id="applyTopicForm" name="applyTopicForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'TOPIC' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.topic" type="text" placeholder="topic名称，如：test_topic"
+                           required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PRODUCER_GROUP' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.producerGroup" type="text"
+                           placeholder="生产组名称，如test_producer" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" multiple chosen
+                            ng-model="ngDialogData.subItem"
+                            ng-options="item.composite as item.composite for item in ngDialogData.subItemList">
+                        <option value=""></option>
+                    </select>
+                    <span><font size="2px" color="red">项目信息没找到，去项目信息页面新增一个</font></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'READ_QUEUE_NUMS' | translate}}/{{'WRITE_QUEUE_NUMS' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.queueNum" placeholder="读/写队列数，默认为8" type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'REMARK' | translate}}:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" ng-model="ngDialogData.remark"
+                              placeholder="备注信息，如果有需要补充的可以填写在这里，管理员及后续维护都可以看到"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary" id="applyTopicBtn"
+                        ng-click="applyTopicRequest(ngDialogData)">{{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+
+<script type="text/ng-template" id="applySubscriptionGroupDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'APPLY' | translate}} Consumer Group</h4>
+    </div>
+    <div class="modal-body">
+        <form id="applySubscriptionGroupForm" name="applySubscriptionGroupForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'SUBSCRIPTION_GROUP' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.subscriptionGroup" type="text"
+                           placeholder="消费组名称，如test_consumer" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'TOPIC' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.topic" type="text"
+                           placeholder="该消费组要订阅的topic名称，多个topic，以英文逗号(,)分隔"
+                           required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" multiple chosen
+                            ng-model="ngDialogData.subItem"
+                            ng-options="item.composite as item.composite for item in ngDialogData.subItemList">
+                        <option value=""></option>
+                    </select>
+                    <span><font size="2px" color="red">项目信息没找到，去项目信息页面新增一个</font></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'CONSUME_BROADCAST_ENABLE' | translate}}:</label>
+                <div class="col-sm-8">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink"
+                               ng-model="ngDialogData.consumeBroadcastEnable">
+                    </md-switch>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'REMARK' | translate}}:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" ng-model="ngDialogData.remark"
+                              placeholder="备注信息，如果有需要补充的可以填写在这里，管理员及后续维护都可以看到"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary" id="applySubscriptionGroupBtn"
+                        ng-click="applySubscriptionGroupRequest(ngDialogData)">{{ 'COMMIT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="approveTopicDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'APPROVE' | translate}} Topic</h4>
+    </div>
+    <div class="modal-body">
+        <form id="approveTopicForm" name="approveTopicForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'TOPIC' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.applyTopicData.topic" type="text"
+                           placeholder="topic名称"
+                           required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PRODUCER_GROUP' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.applyTopicData.producerGroup" type="text"
+                           placeholder="生产组名称，以_producer结尾" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.applyTopicData.subItem" type="text"
+                           placeholder="项目编码/项目名称，如：account(对账系统)" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PROJECT_TEAM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.applyTopicData.itemTeam" type="text"
+                           ng-disabled="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">Access Key:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" chosen
+                            ng-model="ngDialogData.applyTopicData.accessKey"
+                            ng-options="item.accessKey as item.accessKey for item in ngDialogData.accessKeyList">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'READ_QUEUE_NUMS' | translate}}/{{'WRITE_QUEUE_NUMS' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.applyTopicData.queueNum"
+                           placeholder="读/写队列数，默认为8" type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'REMARK' | translate}}:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" ng-model="ngDialogData.applyTopicData.approveRemark"
+                              placeholder="备注信息，如果有需要补充的可以填写在这里，比如哪里不合适，需要驳回"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary" id="approvePassTopicBtn"
+                        ng-click="approveTopicRequest(ngDialogData, 1)">{{ 'PASS' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-danger" id="approveRejectTopicBtn"
+                        ng-confirm-click="Are you sure to reject?"
+                        confirmed-click="approveTopicRequest(ngDialogData, 0)">{{ 'REJECT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="approveSubscriptionGroupDialog">
+    <div class="modal-header">
+        <h4 class="modal-title">{{'APPROVE' | translate}} Consumer Group</h4>
+    </div>
+    <div class="modal-body">
+        <form id="approveSubscriptionForm" name="approveSubscriptionForm" class="form-horizontal" novalidate>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'SUBSCRIPTION_GROUP' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.approveSubscriptionData.subscriptionGroup"
+                           type="text"
+                           placeholder="消费组名称，以_consumer结尾" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'TOPIC' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.approveSubscriptionData.topic" type="text"
+                           placeholder="topic名称"
+                           required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'CONSUME_BROADCAST_ENABLE' | translate}}:</label>
+                <div class="col-sm-10">
+                    <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink"
+                               ng-model="ngDialogData.approveSubscriptionData.consumeBroadcastEnable">
+                    </md-switch>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'ITEM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.approveSubscriptionData.subItem" type="text"
+                           placeholder="项目编码/项目名称，如：account(对账系统)" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'PROJECT_TEAM' | translate}}:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" ng-model="ngDialogData.approveSubscriptionData.itemTeam" type="text"
+                           ng-disabled="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">Access Key:</label>
+                <div class="col-sm-10">
+                    <select name="mySelectItemList" chosen
+                            ng-model="ngDialogData.approveSubscriptionData.accessKey"
+                            ng-options="item.accessKey as item.accessKey for item in ngDialogData.accessKeyList">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">{{'REMARK' | translate}}:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" ng-model="ngDialogData.approveSubscriptionData.approveRemark"
+                              placeholder="备注信息，如果有需要补充的可以填写在这里，比如哪里不合适，需要驳回"></textarea>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <div class="ngdialog-buttons">
+                <button type="button" class="ngdialog-button ngdialog-button-primary" id="approvePassGroupBtn"
+                        ng-click="approveSubscriptionGroupRequest(ngDialogData, 1, 'approvePassGroupBtn')">{{ 'PASS' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-danger" id="approveRejectGroupBtn"
+                        ng-confirm-click="Are you sure to reject?"
+                        confirmed-click="approveSubscriptionGroupRequest(ngDialogData, 0, 'approveRejectGroupBtn')">{{ 'REJECT' | translate }}
+                </button>
+                <button type="button" class="ngdialog-button ngdialog-button-secondary"
+                        ng-click="closeThisDialog('Cancel')">{{ 'CLOSE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</script>

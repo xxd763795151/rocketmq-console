@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            width: 100%;
+            border: gray solid 1px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            table-layout: fixed;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+
+        table tr th, table tr td {
+            border: 1px solid gray;
+        }
+    </style>
+</head>
+<body style="background: lightblue;width: 100%;">
+<div style="padding: 1% 5% 2% 5%">
+    <h1>RocketMQ昨日消息统计</h1><span style="color: red">Note:该数据为昨日近24小时（前后误差1小时）数据统计，并非标准24小时（从00:00-23:59)，数据仅供参考，请勿直接作为精确数据使用。若MQ服务器重启，数据从重启后计算</span>
+    <hr style="margin-bottom: 50px;">
+    <div th:if="${not #lists.isEmpty(topics)}">
+        <h2 style="text-align: center;">消息发送情况</h2>
+        <table cellspacing="0">
+            <thead>
+            <tr>
+                <th>topic</th>
+                <th>消息发送数量</th>
+                <th>发送tps</th>
+                <th>发送总大小(Mb)</th>
+                <th>网络传输速率(Kb/s)</th>
+                <th>储存消息的broker</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="t:${topics}">
+                <td th:text="${t.topic}">test_topic</td>
+                <td th:text="${t.sendNums}">1120</td>
+                <td th:text="${t.sendTps}">11</td>
+                <td th:text="${t.sendSize}">222 Mib</td>
+                <td th:text="${t.sendSpeed}">21 kb</td>
+                <td th:text="${t.broker}">broker-a</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr style="margin-bottom: 50px;">
+    </div>
+    <div th:if="${not #lists.isEmpty(consumers)}">
+        <h2 style="text-align: center;">消息消费情况</h2>
+        <table cellspacing="0">
+            <thead>
+            <tr>
+                <th>消费组</th>
+                <th>topic</th>
+                <th>消息消费数量</th>
+                <th>消费tps</th>
+                <th>消费总大小(Mb)</th>
+                <th>网络传输速率(Kb/s)</th>
+                <th>发送重试消息数</th>
+                <th>储存消息的broker</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c:${consumers}">
+                <td th:text="${c.consumer}">test_topic_consumer</td>
+                <td th:text="${c.topic}">test_topic</td>
+                <td th:text="${c.consumeNums}">1120</td>
+                <td th:text="${c.consumeTps}">11.000000000000000000000000000000</td>
+                <td th:text="${c.consumeSize}">222 Mib</td>
+                <td th:text="${c.consumeSpeed}">21 kb</td>
+                <td th:text="${c.sendBackNums}">0</td>
+                <td th:text="${c.broker}">broker-a</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr style="margin-bottom: 50px;">
+    </div>
+</div>
+
+</body>
+</html>
