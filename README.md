@@ -1,3 +1,18 @@
+# 前言
+代码是基于 https://github.com/apache/rocketmq-dashboard 增加了相关场景的解决方案实现。
+
+在好几年前rocketmq-dashboard还叫做rocketmq-console，那时候rocketmq还是4.x版本，5.0还没有。
+
+基于当时的rocketmq-console进行了一些个性化场景的二开。
+今天翻老电脑的时候发现这个版本实现，想起来提交到github了。
+
+最新的5.x是否支持不确定，应该是不支持，没试，4.x版本肯定是支持的。
+
+相对于4.9版本的rocketmq-dashboard，额外的能力如下：
+* 平台化的流程管理
+* 消息轨迹节点不参与集群业务的查询解决方案
+* 历史备份消息的可视化查询
+
 ## RocketMQ-Console-NG [![Coverage Status](https://coveralls.io/repos/github/rocketmq/rocketmq-console-ng/badge.svg?branch=master)](https://coveralls.io/github/rocketmq/rocketmq-console-ng?branch=master)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 ## How To Install
